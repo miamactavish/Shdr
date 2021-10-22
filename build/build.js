@@ -9,27 +9,7 @@ var getDirName = require('path').dirname;
 var root = "./";
 var base = root+"sources/";
 var coffeedir = base+"shdr";
-var minifiedlibs = [
-	base+"libs/ace/ace.js",
-	base+"libs/ace/mode-glsl.js",
-	base+"libs/threejs/three.min.js",
-	base+"libs/jquery-1.8.js"
-];
 var files = [
-	base+"libs/ace/theme-monokai.js",
-	base+"libs/threejs/three.orbit.js",
-	base+"libs/threejs/three.webglrenderer.custom.js",
-	base+"libs/zip/rawdeflate.js",
-	base+"libs/zip/rawinflate.js",
-	base+"shdr/App.js",
-	base+"shdr/Models.js",
-	base+"shdr/Textures.js",
-	base+"shdr/Snippets.js",
-	base+"shdr/Storage.js",
-	base+"shdr/UI.js",
-	base+"shdr/Validator.js",
-	base+"shdr/Viewer.js",
-	base+"shdr/Bootstrap.js"
 ];
 var chrome_output = "shdr-chrome.zip";
 var chrome_dir = "shdr-chrome";
@@ -100,7 +80,6 @@ function main() {
 	"use strict";
 
 	var parser = new argparse.ArgumentParser();
-	parser.addArgument(['--minify'], { action: 'storeTrue', defaultValue: false });
 	parser.addArgument(['--chromeapp'], { action: 'storeTrue', defaultValue: false });
 	parser.addArgument(['--persist'], { action: 'storeTrue', defaultValue: false });
 	parser.addArgument(['--output'], { defaultValue: 'shdr.js' });
@@ -119,13 +98,6 @@ function main() {
 
 	var buffer = [];
 	var sources = [];
-	var minlibs = "";
-
-	console.log(' * Merging minified libs');
-	for(var i = 0; i < minifiedlibs.length; i++)
-	{
-		minlibs += fs.readFileSync(minifiedlibs[i], 'utf8');
-	}
 
 	console.log(' * Concating .js files');
 	if(!args.minify && !args.chromeapp)
@@ -141,14 +113,14 @@ function main() {
 		var temp = buffer.join('');
 		recrmdirSync(getDirName(output));
 		fs.mkdirSync(getDirName(output));
-		fs.writeFileSync(output, minlibs+temp, 'utf8');
+		fs.writeFileSync(output, temp, 'utf8');
 	}
 	else
 	{
 
 		console.log(' * Minifying...');
 		var result = uglify.minify(files, {});
-		fs.writeFileSync(output, minlibs+result.code, 'utf8');
+		fs.writeFileSync(output, result.code, 'utf8');
 	}
 
 	console.log(' * Shdr was built to '+output);
