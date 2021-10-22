@@ -1,5 +1,4 @@
-
- Viewer = (function() {
+var Viewer = (function() {
   Viewer.FRAGMENT = 0;
 
   Viewer.VERTEX = 1;
@@ -20,14 +19,15 @@
     this.dom.appendChild(this.canvas);
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(35, this.dom.clientWidth / this.dom.clientHeight, 1, 100000);
-    this.controls = new THREE.OrbitControls(this.camera, this.dom);
+    this.controls = new OrbitControls(this.camera, this.dom);
     this.scene.add(this.camera);
-    this.loader = new THREE.JSONLoader();
+    //this.loader = new THREE.JSONLoader();
+
 
     //this.manager = new THREE.LoadingManager();
-    //this.objLoader = new THREE.OBJLoader(this.manager);
-    this.material = this.defaultMaterial();
-    this.loadModel('models/suzanne_high.js');
+    //this.objLoader = new OBJLoader(this.manager);
+    //this.material = this.defaultMaterial();
+    this.loadModel('models/cube.obj');
     this.onResize();
     window.addEventListener('resize', ((function(_this) {
       return function() {
@@ -39,10 +39,10 @@
   Viewer.prototype.update = function() {
     this.controls.update();
     this.time += 0.001;
-    this.uniforms.time.value = this.time;
-    if (this.model && this.rotate) {
-      this.model.rotation.y += this.rotateRate;
-    }
+    //this.uniforms.time.value = this.time;
+    //if (this.model && this.rotate) {
+    //  this.model.rotation.y += this.rotateRate;
+    //}
     return this.renderer.render(this.scene, this.camera);
   };
 
@@ -66,7 +66,8 @@
 
   Viewer.prototype.loadModel = function(key) {
     this.ext = key.split(".");
-    if (this.ext[1] === "obj") {
+    /*
+    if (true) {
       this.objLoader.load(key, (function(_this) {
         return function(geo) {
           return _this.initModel(geo, key);
@@ -79,6 +80,7 @@
         };
       })(this));
     }
+    */
     return this.app.ui.showModelLoader();
   };
 
@@ -91,7 +93,7 @@
       this.scene.remove(this.model);
       old.dispose();
     }
-    this.model = new THREE.Mesh(geo, this.material);
+    this.model = geo;
     if (data != null) {
       if (data.scale != null) {
         this.model.scale.set(data.scale, data.scale, data.scale);
@@ -205,6 +207,7 @@
         uniform['type'] = 't';
         value = value.replace(/^"(.*)"$/, '$1');
         value = value.replace(/^"(.*)"$/, "$1");
+        
         uniform['value'] = THREE.ImageUtils.loadTexture(shdr.Textures[value].data);
       } else {
         this.app.ui.setStatus('Unrecognized uniform type at line ' + lineNum + ': ' + type, shdr.UI.ERROR);
@@ -252,5 +255,6 @@
 
 })();
 
+this.shdr || (this.shdr = {});
 
 this.shdr.Viewer = Viewer;

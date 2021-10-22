@@ -17,6 +17,7 @@ var Validator = (function() {
       e = error1;
       console.log(e);
     }
+    console.log(this.context);
     if (!this.context) {
       this.available = false;
       console.warn('GLSL Validator: No WebGL context.');
