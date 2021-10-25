@@ -5,7 +5,7 @@ var Textures = {
   }
 };
 
-this.shdr || (this.shdr = {});
+window.shdr ||= {};
 
-this.shdr.Textures = Textures;
+window.shdr.Textures = Textures;
 

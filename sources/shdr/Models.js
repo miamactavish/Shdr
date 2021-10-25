@@ -22,12 +22,13 @@ var Models = {
   'models/suzanne_low.js': {
     name: 'Suzanne (low)'
   },
-  'models/suzanne_high.js': {
-    name: 'Suzanne (high)'
-  },
   'models/cube.obj': {
     name: 'Cube (obj)'
+  },
+  'models/suzanne_high.js': {
+    name: 'Suzanne (high)'
   }
+  
 };
 
-this.shdr.Models = Models;
+window.shdr.Models = Models;

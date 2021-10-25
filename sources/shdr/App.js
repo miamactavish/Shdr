@@ -30,7 +30,7 @@
         mode: App.FRAGMENT
       };
       this.extend(this.conf, conf);
-      this.ui = new shdr.UI(this);
+      this.ui = new window.shdr.UI(this);
       if (!this.initViewer(domCanvas)) {
         return;
       }
@@ -67,13 +67,16 @@
     App.prototype.initViewer = function(domCanvas) {
       var conf, e, msg;
       try {
-        this.viewer = new shdr.Viewer(this.byId(domCanvas), this);
-        this.validator = new shdr.Validator(this.viewer.canvas);
+        this.viewer = new window.shdr.Viewer(this.byId(domCanvas), this);
+        this.validator = new window.shdr.Validator(this.viewer.canvas);
+        //this.validator = new window.shdr.Validator(this.byId(domCanvas));
+
+        console.log("initialized viewer");
       } catch (error) {
         e = error;
         console.warn(e);
         msg = "Unable to start Shdr. \n\nWebGL is either deactivated or not supported by your device or browser. \n\nWould you like to visit get.webgl.org for more info?";
-        this.ui.setStatus(msg, shdr.UI.WARNING);
+        this.ui.setStatus(msg,window.shdr.UI.WARNING);
         this.ui.displayWebGLError();
         conf = confirm(msg);
         if (conf) {
@@ -87,7 +90,7 @@
     App.prototype.initEditor = function(domEditor) {
       this.documents[App.FRAGMENT] = this.viewer.fs;
       this.documents[App.VERTEX] = this.viewer.vs;
-      this.documents[App.UNIFORMS] = shdr.Snippets.DefaultUniforms;
+      this.documents[App.UNIFORMS] =window.shdr.Snippets.DefaultUniforms;
       this.editor = ace.edit(domEditor);
       this.editor.setFontSize("16px");
       this.editor.setShowPrintMargin(false);
@@ -118,33 +121,33 @@
         session.removeMarker(this.marker.id);
       }
       if (this.conf.mode === App.FRAGMENT) {
-        type = shdr.Validator.FRAGMENT;
+        type =window.shdr.Validator.FRAGMENT;
       } else if (this.conf.mode === App.UNIFORMS) {
         try {
           newUniforms = session.getValue();
           this.viewer.updateShader(newUniforms, App.UNIFORMS);
         } catch (error) {
           e = error;
-          this.ui.setStatus('Uniform compilation failed', shdr.UI.ERROR);
+          this.ui.setStatus('Uniform compilation failed',window.shdr.UI.ERROR);
         }
         return;
       } else {
-        type = shdr.Validator.VERTEX;
+        type =window.shdr.Validator.VERTEX;
       }
       src = session.getValue();
       if (!src) {
-        this.ui.setStatus('Shader cannot be empty', shdr.UI.WARNING);
+        this.ui.setStatus('Shader cannot be empty',window.shdr.UI.WARNING);
         this.marker = session.highlightLines(0, 0);
         return;
       }
       ref = this.validator.validate(src, type), ok = ref[0], line = ref[1], msg = ref[2];
       if (ok) {
         this.viewer.updateShader(src, this.conf.mode);
-        return this.ui.setStatus('Shader successfully compiled', shdr.UI.SUCCESS);
+        return this.ui.setStatus('Shader successfully compiled',window.shdr.UI.SUCCESS);
       } else {
         line = Math.max(0, line - 1);
         this.marker = session.highlightLines(line, line);
-        return this.ui.setStatus("Line " + line + " : " + msg, shdr.UI.ERROR);
+        return this.ui.setStatus("Line " + line + " : " + msg,window.shdr.UI.ERROR);
       }
     };
 
@@ -161,29 +164,29 @@
         fs = this.documents[App.FRAGMENT];
         vs = this.documents[App.VERTEX];
         uniforms = this.documents[App.UNIFORMS];
-        ref = this.validator.validate(fs, shdr.Validator.FRAGMENT), _fs = ref[0], fl = ref[1], fm = ref[2];
-        ref1 = this.validator.validate(vs, shdr.Validator.VERTEX), _vs = ref1[0], vl = ref1[1], vm = ref1[2];
+        ref = this.validator.validate(fs,window.shdr.Validator.FRAGMENT), _fs = ref[0], fl = ref[1], fm = ref[2];
+        ref1 = this.validator.validate(vs,window.shdr.Validator.VERTEX), _vs = ref1[0], vl = ref1[1], vm = ref1[2];
         this.viewer.updateShader(uniforms, App.UNIFORMS);
         if (_fs && _vs) {
           this.viewer.updateShader(vs, App.VERTEX);
           this.viewer.updateShader(fs, App.FRAGMENT);
           this.editor.getSession().setValue(this.conf.mode === App.VERTEX ? vs : fs);
           this.ui.setMenuMode(App.FRAGMENT);
-          this.ui.setStatus("Shaders successfully loaded and compiled.", shdr.UI.SUCCESS);
+          this.ui.setStatus("Shaders successfully loaded and compiled.",window.shdr.UI.SUCCESS);
         } else if (_vs) {
           this.viewer.updateShader(vs, App.VERTEX);
           this.setMode(App.FRAGMENT, true);
           this.ui.setMenuMode(App.FRAGMENT);
-          this.ui.setStatus("Shaders loaded but Fragment could not compile. Line " + fl + " : " + fm, shdr.UI.WARNING);
+          this.ui.setStatus("Shaders loaded but Fragment could not compile. Line " + fl + " : " + fm,window.shdr.UI.WARNING);
         } else if (_fs) {
           this.viewer.updateShader(fs, App.FRAGMENT);
           this.setMode(App.VERTEX, true);
           this.ui.setMenuMode(App.VERTEX);
-          this.ui.setStatus("Shaders loaded but Vertex could not compile. Line " + vl + " : " + vm, shdr.UI.WARNING);
+          this.ui.setStatus("Shaders loaded but Vertex could not compile. Line " + vl + " : " + vm,window.shdr.UI.WARNING);
         } else {
           this.setMode(App.VERTEX, true);
           this.ui.setMenuMode(App.VERTEX);
-          this.ui.setStatus("Shaders loaded but could not compile. Line " + vl + " : " + vm, shdr.UI.WARNING);
+          this.ui.setStatus("Shaders loaded but could not compile. Line " + vl + " : " + vm,window.shdr.UI.WARNING);
         }
         this.editor.focus();
         return true;
@@ -204,7 +207,7 @@
         return this.baseurl + '#1/' + packed;
       } catch (error) {
         e = error;
-        return this.ui.setStatus("Unable to pack document: " + (typeof e.getMessage === "function" ? e.getMessage() : void 0), shdr.UI.WARNING);
+        return this.ui.setStatus("Unable to pack document: " + (typeof e.getMessage === "function" ? e.getMessage() : void 0),window.shdr.UI.WARNING);
       }
     };
 
@@ -222,7 +225,7 @@
         return obj;
       } catch (error) {
         e = error;
-        return this.ui.setStatus("Unable to unpack document: " + (typeof e.getMessage === "function" ? e.getMessage() : void 0), shdr.UI.WARNING);
+        return this.ui.setStatus("Unable to unpack document: " + (typeof e.getMessage === "function" ? e.getMessage() : void 0),window.shdr.UI.WARNING);
       }
     };
 
@@ -240,11 +243,11 @@
         success: (function(_this) {
           return function(resp) {
             if (!resp || 'error' in resp || !'id' in resp) {
-              _this.ui.setStatus('An error occured while trying to shorten shared URL.', shdr.UI.WARNING);
+              _this.ui.setStatus('An error occured while trying to shorten shared URL.',window.shdr.UI.WARNING);
               console.warn(resp);
               return typeof callback === "function" ? callback(false, null, resp) : void 0;
             } else {
-              _this.ui.setStatus('Shared URL has been shortened.', shdr.UI.SUCCESS);
+              _this.ui.setStatus('Shared URL has been shortened.',window.shdr.UI.SUCCESS);
               return typeof callback === "function" ? callback(true, resp.id, resp) : void 0;
             }
           };
@@ -254,7 +257,7 @@
             if (typeof callback === "function") {
               callback(false, null, e);
             }
-            _this.ui.setStatus('URL shortening service is not active.', shdr.UI.WARNING);
+            _this.ui.setStatus('URL shortening service is not active.',window.shdr.UI.WARNING);
             return console.warn('ERROR: ', e);
           };
         })(this)
@@ -264,7 +267,7 @@
     App.prototype.texture = function(textureObj) {
       var e, reader;
       try {
-        this.ui.setStatus('Uploading...', shdr.UI.WARNING);
+        this.ui.setStatus('Uploading...',window.shdr.UI.WARNING);
         reader = new FileReader();
         reader.readAsDataURL(textureObj);
         console.log(textureObj);
@@ -276,20 +279,20 @@
               name: textureObj.name,
               data: e.target.result
             };
-            shdr.Textures[texture.name] = texture;
-            return _this.ui.setStatus('Uploaded', shdr.UI.SUCCESS);
+           window.shdr.Textures[texture.name] = texture;
+            return _this.ui.setStatus('Uploaded',window.shdr.UI.SUCCESS);
           };
         })(this);
       } catch (error) {
         e = error;
-        return this.ui.setStatus('You must select a texture to upload.', shdr.UI.WARNING);
+        return this.ui.setStatus('You must select a texture to upload.',window.shdr.UI.WARNING);
       }
     };
 
     App.prototype.upload = function(fileObj) {
       var e, reader;
       try {
-        this.ui.setStatus('Uploading...', shdr.UI.WARNING);
+        this.ui.setStatus('Uploading...',window.shdr.UI.WARNING);
         reader = new FileReader();
         reader.readAsDataURL(fileObj);
         return reader.onload = (function(_this) {
@@ -299,14 +302,14 @@
               name: fileObj.name.split('.')[0],
               data: e.target.result
             };
-            shdr.Models[e.target.result] = model;
-            _this.ui.setStatus('Uploaded', shdr.UI.SUCCESS);
+           window.shdr.Models[e.target.result] = model;
+            _this.ui.setStatus('Uploaded',window.shdr.UI.SUCCESS);
             return _this.ui.addNewModel(fileObj.name, e.target.result);
           };
         })(this);
       } catch (error) {
         e = error;
-        return this.ui.setStatus('You must select a .js model to upload.', shdr.UI.WARNING);
+        return this.ui.setStatus('You must select a .js model to upload.',window.shdr.UI.WARNING);
       }
     };
 
@@ -321,11 +324,11 @@
         if (win) {
           win.focus();
         } else {
-          this.ui.setStatus('Your browser as blocked the download, please disable popup blocker.', shdr.UI.WARNING);
+          this.ui.setStatus('Your browser as blocked the download, please disable popup blocker.',window.shdr.UI.WARNING);
         }
       } catch (error) {
         e = error;
-        this.ui.setStatus('Your browser does not support Blob, unable to download.', shdr.UI.WARNING);
+        this.ui.setStatus('Your browser does not support Blob, unable to download.',window.shdr.UI.WARNING);
       }
       return url;
     };
@@ -338,19 +341,19 @@
         name: name,
         date: +Date.now()
       };
-      shdr.Storage.addDocument(name, obj);
+     window.shdr.Storage.addDocument(name, obj);
       this.ui.resetLoadFiles();
-      return this.ui.setStatus("Shaders saved as '" + name + "'.", shdr.UI.SUCCESS);
+      return this.ui.setStatus("Shaders saved as '" + name + "'.",window.shdr.UI.SUCCESS);
     };
 
     App.prototype.load = function(name) {
       var obj;
-      obj = shdr.Storage.getDocument(name);
+      obj =window.shdr.Storage.getDocument(name);
       if (obj != null) {
         this.initDocuments(obj);
         return true;
       } else {
-        this.ui.setStatus("'" + name + "' Shaders do not exist.", shdr.UI.WARNING);
+        this.ui.setStatus("'" + name + "' Shaders do not exist.",window.shdr.UI.WARNING);
         return false;
       }
     };
@@ -358,23 +361,23 @@
     App.prototype["new"] = function() {
       var obj;
       obj = {
-        documents: [shdr.Snippets.DefaultFragment, shdr.Snippets.DefaultVertex, shdr.Snippets.DefaultUniforms],
+        documents: [shdr.Snippets.DefaultFragment,window.shdr.Snippets.DefaultVertex,window.shdr.Snippets.DefaultUniforms],
         name: 'Untitled'
       };
       this.initDocuments(obj);
-      this.ui.setStatus('Editor reset using default shaders.', shdr.UI.SUCCESS);
+      this.ui.setStatus('Editor reset using default shaders.',window.shdr.UI.SUCCESS);
       this.ui.clearName('Untitled');
-      return loadModel('models/suzanne_high.js');
+      return loadModel('models/cube.obj');
     };
 
     App.prototype.newDemo = function() {
       var obj;
       obj = {
-        documents: [shdr.Snippets.DemoFragment, shdr.Snippets.DemoVertex],
+        documents: [shdr.Snippets.DemoFragment,window.shdr.Snippets.DemoVertex],
         name: 'Untitled'
       };
       this.initDocuments(obj);
-      this.ui.setStatus('Editor reset using default shaders.', shdr.UI.SUCCESS);
+      this.ui.setStatus('Editor reset using default shaders.',window.shdr.UI.SUCCESS);
       this.ui.clearName('Untitled');
       return this.viewer.loadModel('models/quad.js');
     };
@@ -384,15 +387,15 @@
       if (reset == null) {
         reset = false;
       }
-      removed = shdr.Storage.removeDocument(name);
+      removed =window.shdr.Storage.removeDocument(name);
       if (removed) {
         if (reset) {
           this["new"]();
         }
         this.ui.resetLoadFiles();
-        return this.ui.setStatus("'" + name + "' Shaders removed.", shdr.UI.INFO);
+        return this.ui.setStatus("'" + name + "' Shaders removed.",window.shdr.UI.INFO);
       } else {
-        return this.ui.setStatus("Unable to remove '" + name + "'. Shaders do not exist.", shdr.UI.WARNING);
+        return this.ui.setStatus("Unable to remove '" + name + "'. Shaders do not exist.",window.shdr.UI.WARNING);
       }
     };
 
@@ -505,8 +508,8 @@
 
   })();
 
-  this.shdr || (this.shdr = {});
+  window.shdr ||= {};
 
-  this.shdr.App = App;
+  window.shdr.App = App;
 
 }).call(this);

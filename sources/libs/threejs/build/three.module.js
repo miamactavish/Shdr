@@ -1449,15 +1449,15 @@ class ImageUtils {
 			_canvas.width = image.width;
 			_canvas.height = image.height;
 
-			const context = _canvas.getContext( '2d' );
+			//const context = _canvas.getContext( '2d' );
 
 			if ( image instanceof ImageData ) {
 
-				context.putImageData( image, 0, 0 );
+				//context.putImageData( image, 0, 0 );
 
 			} else {
 
-				context.drawImage( image, 0, 0, image.width, image.height );
+				//context.drawImage( image, 0, 0, image.width, image.height );
 
 			}
 
@@ -21753,8 +21753,8 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 
 	try {
 
-		useOffscreenCanvas = typeof OffscreenCanvas !== 'undefined'
-			&& ( new OffscreenCanvas( 1, 1 ).getContext( '2d' ) ) !== null;
+		//useOffscreenCanvas = typeof OffscreenCanvas !== 'undefined'
+		//	&& ( new OffscreenCanvas( 1, 1 ).getContext( '2d' ) ) !== null;
 
 	} catch ( err ) {
 
@@ -21807,8 +21807,8 @@ function WebGLTextures( _gl, extensions, state, properties, capabilities, utils,
 				canvas.width = width;
 				canvas.height = height;
 
-				const context = canvas.getContext( '2d' );
-				context.drawImage( image, 0, 0, width, height );
+				//const context = canvas.getContext( '2d' );
+				//context.drawImage( image, 0, 0, width, height );
 
 				console.warn( 'THREE.WebGLRenderer: Texture has been resized from (' + image.width + 'x' + image.height + ') to (' + width + 'x' + height + ').' );
 

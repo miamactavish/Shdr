@@ -117,8 +117,8 @@
 
   })();
 
-  this.shdr || (this.shdr = {});
+  window.shdr ||= {};
 
-  this.shdr.Storage = Storage;
+  window.shdr.Storage = Storage;
 
 }).call(this);

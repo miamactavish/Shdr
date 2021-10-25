@@ -19,5 +19,5 @@ var Snippets = {
   'Transpose (mat3)': ['mat3 transpose( mat3 m )', '{', '  mat3 ret = m;', '  ret[0][1] = m[1][0];', '  ret[0][2] = m[2][0];', '  ret[1][0] = m[0][1];', '  ret[1][2] = m[2][1];', '  ret[2][0] = m[0][2];', '  ret[2][1] = m[1][2];', '  return ret;', '}'].join('\n')
 };
 
-this.shdr.Snippets = Snippets;
+window.shdr.Snippets = Snippets;
 

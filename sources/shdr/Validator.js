@@ -7,12 +7,13 @@ var Validator = (function() {
   function Validator(canvas) {
     var e;
     this.canvas = canvas;
+    console.dir(canvas);
     this.available = true;
     if (!this.canvas) {
       this.canvas = document.createElement('Canvas');
     }
     try {
-      this.context = this.canvas.getContext("webgl") || this.canvas.getContext("experimental-webgl");
+      this.context = this.canvas.getContext("webgl2");
     } catch (error1) {
       e = error1;
       console.log(e);
@@ -73,4 +74,4 @@ var Validator = (function() {
 
 })();
 
-this.shdr.Validator = Validator;
+window.shdr.Validator = Validator;

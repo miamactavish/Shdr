@@ -48,7 +48,7 @@ var UI = (function() {
   UI.prototype.resetLoadFiles = function() {
     var d, i, len, ref, tpl;
     tpl = "";
-    ref = shdr.Storage.listDocuments();
+    ref = window.shdr.Storage.listDocuments();
     for (i = 0, len = ref.length; i < len; i++) {
       d = ref[i];
       tpl += "<button type='button' class='menu-item' data-index='" + d + "'>" + d + "</button>\n";
@@ -167,7 +167,7 @@ var UI = (function() {
     var button, key, list;
     list = $('#menu-snippets .menu-list');
     button = $('<button>').addClass('menu-item');
-    for (key in shdr.Snippets) {
+    for (key in window.shdr.Snippets) {
       list.append(button.clone().text(key));
     }
     return false;
@@ -177,7 +177,7 @@ var UI = (function() {
     var button, key, list, model, ref;
     list = $('#menu-models .menu-list');
     button = $('<button>').addClass('menu-item');
-    ref = shdr.Models;
+    ref = window.shdr.Models;
     for (key in ref) {
       model = ref[key];
       list.append(button.clone().text(model.name).attr('data-index', key));
@@ -191,7 +191,7 @@ var UI = (function() {
 
     console.log(key);
 
-    ref = shdr.Models;
+    ref = window.shdr.Models;
     ref[key] = modelName;
 
     console.log("Models:");
@@ -326,7 +326,7 @@ var UI = (function() {
 
   UI.prototype.snippetsAction = function(index, item, trigger) {
     var code;
-    code = shdr.Snippets[item.text()];
+    code = window.shdr.Snippets[item.text()];
     if (code != null) {
       return this.app.editor.insert(code);
     }
@@ -386,7 +386,7 @@ var UI = (function() {
     if (win) {
       return win.focus();
     } else {
-      return this.ui.setStatus('Your browser as blocked the Help window, please disable your popup blocker.', shdr.UI.WARNING);
+      return this.ui.setStatus('Your browser as blocked the Help window, please disable your popup blocker.', window.shdr.UI.WARNING);
     }
   };
 
@@ -436,4 +436,4 @@ var UI = (function() {
 })();
 
 
-this.shdr.UI = UI;
+window.shdr.UI = UI;
