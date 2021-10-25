@@ -20,39 +20,32 @@ var Viewer = (function() {
       antialias: true
     });
     this.canvas = this.renderer.domElement;
-    console.log("In viewer");
-    //console.log(THREE.isWebGL2);
-    //console.log(this.canvas.getContext("webgl2"));
 
     this.dom.appendChild(this.canvas);
     shdr.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(45, this.dom.clientWidth / this.dom.clientHeight, 0.1, 100000);
     this.controls = new OrbitControls(this.camera, this.dom);
     shdr.scene.add(this.camera);
-    //this.loader = new THREE.JSONLoader();
 
     // manager
 
-    let object; 
+    let object;
+    let material = this.defaultMaterial();
+
     function loadModel() {
 
-      //object.traverse( function ( child ) {
+      object.traverse( function ( child ) {
 
-        //if ( child.isMesh ) child.material.map = texture;
+        if ( child.isMesh ) child.material = material;
 
-      //} );
+      } );
 
-      //object.position.y = - 95;
-      //shdr.scene.add( object );
+      shdr.scene.add( object );
     }
 
     this.manager = new THREE.LoadingManager( loadModel );
+    this.manager.onProgress = function ( item, loaded, total ) { console.log( item, loaded, total ); };
 
-    this.manager.onProgress = function ( item, loaded, total ) {
-
-      console.log( item, loaded, total );
-
-    };
 
     function onProgress( xhr ) {
 
@@ -80,20 +73,9 @@ var Viewer = (function() {
       object = obj;
 
     }, onProgress, onError );
-    
-    const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    //var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-
-    const size = 0.65;
 
     this.material = this.defaultMaterial();
-    const cube = new THREE.Mesh( geometry, this.material );
-    shdr.scene.add( cube );
 
-    //this.manager = new THREE.LoadingManager();
-    //this.objLoader = new OBJLoader(this.manager);
-    //this.material = this.defaultMaterial();
-    //this.loadModel('models/cube.obj');
     this.onResize();
     window.addEventListener('resize', ((function(_this) {
       return function() {
@@ -135,21 +117,12 @@ var Viewer = (function() {
   Viewer.prototype.loadModel = function(key) {
     this.ext = key.split(".");
     
-    //if (true) {
-      this.objLoader.load(key, (function(_this) {
-        return function(geo) {
-          return _this.initModel(geo, key);
-        };
-      })(this));
-    /*
-    } else {
-      this.loader.load(key, (function(_this) {
-        return function(geo) {
-          return _this.initModel(geo, key);
-        };
-      })(this));
-    }
-    */
+    this.objLoader.load(key, (function(_this) {
+      return function(geo) {
+        return _this.initModel(geo, key);
+      };
+    })(this));
+
     return this.app.ui.showModelLoader();
   };
 
