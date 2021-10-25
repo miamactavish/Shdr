@@ -84,20 +84,10 @@ var Viewer = (function() {
     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
     //var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
 
-    var uniforms = {
-    };
     const size = 0.65;
 
-    const material = new THREE.ShaderMaterial( {
-
-      uniforms: uniforms,
-      vertexShader: document.getElementById( 'vertexShader' ).textContent,
-      fragmentShader: document.getElementById( 'fragmentShader' ).textContent
-
-    } );
-
     this.material = this.defaultMaterial();
-    const cube = new THREE.Mesh( geometry, material );
+    const cube = new THREE.Mesh( geometry, this.material );
     shdr.scene.add( cube );
 
     //this.manager = new THREE.LoadingManager();
@@ -136,8 +126,8 @@ var Viewer = (function() {
       this.camera.lookAt(shdr.scene.position);
     }
     if (this.uniforms) {
-      this.uniforms.resolution.value.x = this.dom.clientWidth;
-      this.uniforms.resolution.value.y = this.dom.clientHeight;
+      //this.uniforms.resolution.value.x = this.dom.clientWidth;
+      //this.uniforms.resolution.value.y = this.dom.clientHeight;
     }
     return this.renderer.setSize(this.dom.clientWidth, this.dom.clientHeight);
   };
@@ -324,27 +314,36 @@ var Viewer = (function() {
   };
 
   Viewer.prototype.defaultMaterial = function() {
-    //this.resetUniforms();
-    //this.addCustomUniforms(this.parseUniforms(shdr.Snippets.DefaultUniforms));
+    this.resetUniforms();
+    this.addCustomUniforms(this.parseUniforms(shdr.Snippets.DefaultUniforms));
 
+    /*
     this.uniforms = {
 
       "time": { value: 1.0 },
       "resolution" : { value: new THREE.Vector2(0, 1)},
     };
-
+*/
+    this.uniforms = {};
     //this.vs = window.shdr.Snippets.DefaultVertex;
     //this.fs = window.shdr.Snippets.DefaultFragment;
 
-    this.vs = window.shdr.Snippets.DemoVertex;
-    this.fs = window.shdr.Snippets.DemoFragment;
+    this.vs = window.shdr.Snippets.MiaTestVert;
+    this.fs = window.shdr.Snippets.MiaTestFrag;
 
+    return new THREE.ShaderMaterial( {
 
+      uniforms: this.uniforms,
+      vertexShader: window.shdr.Snippets.MiaTestVert,
+      fragmentShader: window.shdr.Snippets.MiaTestFrag
+    } );
+/*
     return new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader: this.vs,
       fragmentShader: this.fs
     });
+    */
   };
 
   return Viewer;

@@ -2,6 +2,7 @@ var Snippets = {
   'DefaultVertex': ['precision highp float;', 'attribute vec3 position;', 'attribute vec3 normal;', 'uniform mat3 normalMatrix;', 'uniform mat4 modelViewMatrix;', 'uniform mat4 projectionMatrix;', 'uniform mat2 faceVertexUvs;', 'varying vec3 fNormal;', 'varying vec3 fPosition;', 'varying vec2 vUv;', '', 'void main()', '{', '  vUv = faceVertexUvs * vec2(1, 1);', '  fNormal = normalize(normalMatrix * normal);', '  vec4 pos = modelViewMatrix * vec4(position, 1.0);', '  fPosition = pos.xyz;', '  gl_Position = projectionMatrix * pos;', '}'].join('\n'),
   'DefaultFragment': ['precision highp float;', 'uniform float time;', 'uniform vec2 resolution;', 'varying vec3 fPosition;', 'varying vec3 fNormal;', 'varying vec2 vUv;', 'uniform vec3 testColor;', '', 'void main()', '{', '  gl_FragColor = vec4(fNormal, 1.0);', '}'].join('\n'),
   'DefaultUniforms': ['vec3 testColor = vec3(0.0, 0.0, 1.0);', 'sampler2D my_texture = "textures/beanie.jpg";'].join('\n'),
+  'MiaUniforms': [].join('\n'),
   'Texture': ['precision highp float;', 'uniform float time;', 'uniform vec2 resolution;', 'varying vec3 fPosition;', 'varying vec3 fNormal;', 'uniform sampler2D my_texture;', '', 'void main()', '{', '  vec4 color = texture2D(my_texture, vec2((0.4 * fNormal.x) + 0.6, (0.4 * fNormal.y) + 0.4));', '  gl_FragColor = vec4(color.x, color.y, color.z, 1.0);', '}'].join('\n'),
   'DemoVertex': ['precision highp float;', 'attribute vec3 position;', '', 'void main()', '{', '  gl_Position = vec4(position, 1.0);', '}'].join('\n'),
   'DemoFragment': ['precision highp float;', '', 'uniform float time;', 'uniform vec2 resolution;', '', 'uniform mat4 modelViewMatrix;', 'uniform mat4 projectionMatrix;', '', 'void main()', '{', '  vec2 pixel = -1.0 + 2.0 * gl_FragCoord.xy / resolution.xy;', '  pixel.x *= resolution.x/resolution.y;', '  gl_FragColor = vec4(pixel,.0,1.);', '}'].join('\n'),
@@ -16,7 +17,9 @@ var Snippets = {
   'ColorNormal': ['vec3 colorNormal(vec3 col1, vec3 col2, vec3 col3)', '{', '  vec3 n = normalize(fNormal);', '  return clamp(col1*n.x + col2*n.y + col3*n.z,', '              vec3(0.0), vec3(1.0));', '}'].join('\n'),
   'Rimlight': ['vec3 rim(vec3 color, float start, float end, float coef)', '{', '  vec3 normal = normalize(fNormal);', '  vec3 eye = normalize(-fPosition.xyz);', '  float rim = smoothstep(start, end, 1.0 - dot(normal, eye));', '  return clamp(rim, 0.0, 1.0) * coef * color;', '}'].join('\n'),
   'Split': ['vec3 split(vec3 left, vec3 right, float ratio, bool horizontal)', '{', '  float i = float(horizontal);', '  float m = i*gl_FragCoord.x/resolution.x;', '  m += (1.0-i)*gl_FragCoord.y/resolution.y;', '  float d = float(m < ratio);', '  return left*d + right*(1.0-d);', '}'].join('\n'),
-  'Transpose (mat3)': ['mat3 transpose( mat3 m )', '{', '  mat3 ret = m;', '  ret[0][1] = m[1][0];', '  ret[0][2] = m[2][0];', '  ret[1][0] = m[0][1];', '  ret[1][2] = m[2][1];', '  ret[2][0] = m[0][2];', '  ret[2][1] = m[1][2];', '  return ret;', '}'].join('\n')
+  'Transpose (mat3)': ['mat3 transpose( mat3 m )', '{', '  mat3 ret = m;', '  ret[0][1] = m[1][0];', '  ret[0][2] = m[2][0];', '  ret[1][0] = m[0][1];', '  ret[1][2] = m[2][1];', '  ret[2][0] = m[0][2];', '  ret[2][1] = m[1][2];', '  return ret;', '}'].join('\n'),
+  'MiaTestFrag': ['precision highp float;','uniform float time;','uniform vec2 resolution;','void main( void ) {','gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);','}'].join('\n'),
+  'MiaTestVert' : ['precision highp float;','void main()','{','vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );','gl_Position = projectionMatrix * mvPosition;','}'].join('\n'),
 };
 
 window.shdr.Snippets = Snippets;
