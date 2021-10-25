@@ -183,6 +183,26 @@
 <div id="top-separator"></div>
 <div id="bottom-separator"></div>
 
+<script id="fragmentShader" type="x-shader/x-fragment">
+
+  void main( void ) {
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+
+  }
+
+</script>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+
+  void main()
+  {
+    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+    gl_Position = projectionMatrix * mvPosition;
+
+  }
+
+</script>
+
 <script src="libs/ace/ace.js"></script>
 <script src="libs/ace/mode-glsl.js"></script>
 <script src="libs/jquery-1.8.js"></script>

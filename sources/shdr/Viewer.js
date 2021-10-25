@@ -82,7 +82,20 @@ var Viewer = (function() {
     }, onProgress, onError );
     
     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    //var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+
+    var uniforms = {
+    };
+    const size = 0.65;
+
+    const material = new THREE.ShaderMaterial( {
+
+      uniforms: uniforms,
+      vertexShader: document.getElementById( 'vertexShader' ).textContent,
+      fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+
+    } );
+
     this.material = this.defaultMaterial();
     const cube = new THREE.Mesh( geometry, material );
     shdr.scene.add( cube );
@@ -103,7 +116,7 @@ var Viewer = (function() {
     this.controls.update();
     this.time += 0.001;
     
-    this.uniforms.time.value = this.time;
+    //this.uniforms.time.value = this.time;
     if (this.model && this.rotate) {
       this.model.rotation.y += this.rotateRate;
     }
@@ -311,7 +324,7 @@ var Viewer = (function() {
   };
 
   Viewer.prototype.defaultMaterial = function() {
-    this.resetUniforms();
+    //this.resetUniforms();
     //this.addCustomUniforms(this.parseUniforms(shdr.Snippets.DefaultUniforms));
 
     this.uniforms = {
@@ -320,8 +333,12 @@ var Viewer = (function() {
       "resolution" : { value: new THREE.Vector2(0, 1)},
     };
 
-    this.vs = window.shdr.Snippets.DefaultVertex;
-    this.fs = window.shdr.Snippets.DefaultFragment;
+    //this.vs = window.shdr.Snippets.DefaultVertex;
+    //this.fs = window.shdr.Snippets.DefaultFragment;
+
+    this.vs = window.shdr.Snippets.DemoVertex;
+    this.fs = window.shdr.Snippets.DemoFragment;
+
 
     return new THREE.ShaderMaterial({
       uniforms: this.uniforms,
