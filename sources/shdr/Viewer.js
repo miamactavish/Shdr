@@ -27,17 +27,20 @@ var Viewer = (function() {
     this.controls = new OrbitControls(this.camera, this.dom);
     shdr.scene.add(this.camera);
 
+    this.vs = window.shdr.Snippets.MiaTestVert;
+    this.fs = window.shdr.Snippets.MiaTestFrag;
+
     // manager
 
     let object;
-    let material = this.defaultMaterial();
+    shdr.material = this.defaultMaterial();
 
     function loadModel() {
 
       object.traverse( function ( child ) {
 
-        if ( child.isMesh ) child.material = material;
-
+        if ( child.isMesh ) child.material = shdr.material;
+        //if ( child.isMesh ) child.material.map = material;
       } );
 
       shdr.scene.add( object );
@@ -46,35 +49,24 @@ var Viewer = (function() {
     this.manager = new THREE.LoadingManager( loadModel );
     this.manager.onProgress = function ( item, loaded, total ) { console.log( item, loaded, total ); };
 
-
     function onProgress( xhr ) {
-
       if ( xhr.lengthComputable ) {
-
         const percentComplete = xhr.loaded / xhr.total * 100;
         console.log( 'model ' + Math.round( percentComplete, 2 ) + '% downloaded' );
-
       }
-
     }
-
     function onError() {}
 
     // texture
-
-    /*
     const textureLoader = new THREE.TextureLoader( this.manager );
     const texture = textureLoader.load( 'textures/beanie.jpg' );
-    */
     
     this.objLoader = new OBJLoader( this.manager );
     this.objLoader.load( 'models/cube.obj', function ( obj ) {
-
       object = obj;
-
     }, onProgress, onError );
 
-    this.material = this.defaultMaterial();
+    this.model = object;
 
     this.onResize();
     window.addEventListener('resize', ((function(_this) {
@@ -108,8 +100,8 @@ var Viewer = (function() {
       this.camera.lookAt(shdr.scene.position);
     }
     if (this.uniforms) {
-      //this.uniforms.resolution.value.x = this.dom.clientWidth;
-      //this.uniforms.resolution.value.y = this.dom.clientHeight;
+      this.uniforms.resolution.value.x = this.dom.clientWidth;
+      this.uniforms.resolution.value.y = this.dom.clientHeight;
     }
     return this.renderer.setSize(this.dom.clientWidth, this.dom.clientHeight);
   };
@@ -153,16 +145,16 @@ var Viewer = (function() {
     }
     if (mode === Viewer.FRAGMENT) {
       this.fs = shader;
-      this.material.fragmentShader = shader;
+      shdr.material.fragmentShader = shader;
     } else if (mode === Viewer.UNIFORMS) {
       this.resetUniforms();
       this.addCustomUniforms(this.parseUniforms(shader));
-      this.material.uniforms = this.uniforms;
+      shdr.material.uniforms = this.uniforms;
     } else {
       this.vs = shader;
-      this.material.vertexShader = shader;
+      shdr.material.vertexShader = shader;
     }
-    return this.material.needsUpdate = true;
+    return shdr.material.needsUpdate = true;
   };
 
   Viewer.prototype.resetUniforms = function() {
@@ -288,35 +280,14 @@ var Viewer = (function() {
 
   Viewer.prototype.defaultMaterial = function() {
     this.resetUniforms();
-    this.addCustomUniforms(this.parseUniforms(shdr.Snippets.DefaultUniforms));
-
-    /*
-    this.uniforms = {
-
-      "time": { value: 1.0 },
-      "resolution" : { value: new THREE.Vector2(0, 1)},
-    };
-*/
-    this.uniforms = {};
-    //this.vs = window.shdr.Snippets.DefaultVertex;
-    //this.fs = window.shdr.Snippets.DefaultFragment;
-
-    this.vs = window.shdr.Snippets.MiaTestVert;
-    this.fs = window.shdr.Snippets.MiaTestFrag;
-
+    //this.addCustomUniforms(this.parseUniforms(shdr.Snippets.DefaultUniforms));
+    
     return new THREE.ShaderMaterial( {
 
       uniforms: this.uniforms,
-      vertexShader: window.shdr.Snippets.MiaTestVert,
-      fragmentShader: window.shdr.Snippets.MiaTestFrag
-    } );
-/*
-    return new THREE.ShaderMaterial({
-      uniforms: this.uniforms,
       vertexShader: this.vs,
       fragmentShader: this.fs
-    });
-    */
+    } );
   };
 
   return Viewer;
