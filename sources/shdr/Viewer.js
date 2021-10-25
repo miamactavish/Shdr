@@ -25,10 +25,10 @@ var Viewer = (function() {
     //console.log(this.canvas.getContext("webgl2"));
 
     this.dom.appendChild(this.canvas);
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(35, this.dom.clientWidth / this.dom.clientHeight, 1, 100000);
+    shdr.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(45, this.dom.clientWidth / this.dom.clientHeight, 0.1, 100000);
     this.controls = new OrbitControls(this.camera, this.dom);
-    this.scene.add(this.camera);
+    shdr.scene.add(this.camera);
     //this.loader = new THREE.JSONLoader();
 
     // manager
@@ -36,15 +36,14 @@ var Viewer = (function() {
     let object; 
     function loadModel() {
 
-      object.traverse( function ( child ) {
+      //object.traverse( function ( child ) {
 
-        if ( child.isMesh ) child.material.map = texture;
+        //if ( child.isMesh ) child.material.map = texture;
 
-      } );
+      //} );
 
-      object.position.y = - 95;
-      scene.add( object );
-
+      //object.position.y = - 95;
+      //shdr.scene.add( object );
     }
 
     this.manager = new THREE.LoadingManager( loadModel );
@@ -70,19 +69,27 @@ var Viewer = (function() {
 
     // texture
 
+    /*
     const textureLoader = new THREE.TextureLoader( this.manager );
     const texture = textureLoader.load( 'textures/beanie.jpg' );
-
+    */
+    
     this.objLoader = new OBJLoader( this.manager );
     this.objLoader.load( 'models/cube.obj', function ( obj ) {
 
       object = obj;
 
     }, onProgress, onError );
+    
+    const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+    var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    this.material = this.defaultMaterial();
+    const cube = new THREE.Mesh( geometry, material );
+    shdr.scene.add( cube );
 
     //this.manager = new THREE.LoadingManager();
     //this.objLoader = new OBJLoader(this.manager);
-    this.material = this.defaultMaterial();
+    //this.material = this.defaultMaterial();
     //this.loadModel('models/cube.obj');
     this.onResize();
     window.addEventListener('resize', ((function(_this) {
@@ -100,8 +107,8 @@ var Viewer = (function() {
     if (this.model && this.rotate) {
       this.model.rotation.y += this.rotateRate;
     }
-    
-    return this.renderer.render(this.scene, this.camera);
+
+    return this.renderer.render(shdr.scene, this.camera);
   };
 
   Viewer.prototype.reset = function() {
@@ -113,7 +120,7 @@ var Viewer = (function() {
       this.camera.aspect = this.dom.clientWidth / this.dom.clientHeight;
       this.camera.updateProjectionMatrix();
       this.camera.position.z = 900 / this.dom.clientWidth * 4;
-      this.camera.lookAt(this.scene.position);
+      this.camera.lookAt(shdr.scene.position);
     }
     if (this.uniforms) {
       this.uniforms.resolution.value.x = this.dom.clientWidth;
@@ -149,7 +156,7 @@ var Viewer = (function() {
     data = window.shdr.Models[key];
     if (this.model != null) {
       old = this.model.geometry;
-      this.scene.remove(this.model);
+      shdr.scene.remove(this.model);
       old.dispose();
     }
     console.log(geo);
@@ -160,7 +167,7 @@ var Viewer = (function() {
         this.model.scale.set(data.scale, data.scale, data.scale);
       }
     }
-    this.scene.add(this.model);
+    shdr.scene.add(this.model);
     return this.app.ui.hideModelLoader();
   };
 
@@ -305,9 +312,17 @@ var Viewer = (function() {
 
   Viewer.prototype.defaultMaterial = function() {
     this.resetUniforms();
-    this.addCustomUniforms(this.parseUniforms(shdr.Snippets.DefaultUniforms));
+    //this.addCustomUniforms(this.parseUniforms(shdr.Snippets.DefaultUniforms));
+
+    this.uniforms = {
+
+      "time": { value: 1.0 },
+      "resolution" : { value: new THREE.Vector2(0, 1)},
+    };
+
     this.vs = window.shdr.Snippets.DefaultVertex;
     this.fs = window.shdr.Snippets.DefaultFragment;
+
     return new THREE.ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader: this.vs,
