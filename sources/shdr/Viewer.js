@@ -27,8 +27,8 @@ var Viewer = (function() {
     this.controls = new OrbitControls(this.camera, this.dom);
     shdr.scene.add(this.camera);
 
-    this.vs = window.shdr.Snippets.MiaTestVert;
-    this.fs = window.shdr.Snippets.MiaTestFrag;
+    this.vs = window.shdr.Snippets.DefaultVertex;
+    this.fs = window.shdr.Snippets.DefaultFragment;
 
     // manager
 
@@ -179,6 +179,7 @@ var Viewer = (function() {
     for (i = 0, len = toParse.length; i < len; i++) {
       line = toParse[i];
       lineNum += 1;
+      console.log(line);
       if (!line.trim().length) {
         continue;
       }
@@ -282,7 +283,7 @@ var Viewer = (function() {
     this.resetUniforms();
     //this.addCustomUniforms(this.parseUniforms(shdr.Snippets.DefaultUniforms));
     
-    return new THREE.ShaderMaterial( {
+    return new THREE.RawShaderMaterial( {
 
       uniforms: this.uniforms,
       vertexShader: this.vs,
